@@ -10,8 +10,8 @@ docker-compose up
 * Install mosquitto client tools (e.g. apt install mosquitto-client)
 * Subscribe to the test topic
 
-    mosquitto_sub -t test -h <infrastructure-host>
+      mosquitto_sub -t test -h <infrastructure-host>
 
 * Send a message
 
-    mosquitto_pub -t test -m "Hello wold" -h <infrastructure-host>
+      mosquitto_pub -t test -m "Hello wold" -h <infrastructure-host>
