@@ -5,7 +5,7 @@ mkdir node-red-data
 chmod 777 node-red-data
 docker-compose up
 
-### Test ###
+### Test mosquitto mqtt broker ###
 
 * Install mosquitto client tools (e.g. apt install mosquitto-client)
 * Subscribe to the test topic
@@ -15,3 +15,10 @@ docker-compose up
 * Send a message
 
       mosquitto_pub -t test -m "Hello wold" -h <infrastructure-host>
+
+### Install arduino IDE with ESP8266 support ###
+
+* Download Arduino from [here](https://www.arduino.cc/en/Main/Software?)
+* Start Arduino IDE and go to preferences
+* Enter http://arduino.esp8266.com/stable/package_esp8266com_index.json into Additional Board Manager URLs field. 
+* Restart IDE and select ESP8266 as target platform
