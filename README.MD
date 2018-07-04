@@ -26,7 +26,7 @@
 * Start Arduino IDE and go to preferences
 * Enter http://arduino.esp8266.com/stable/package_esp8266com_index.json into Additional Board Manager URLs field. 
 * Restart IDE and select ESP8266 as target platform
-* Set flash mode to "DIO", reset method to "nodemcu" and select the correct usb device (e.g. ```/dev/ttyUSB0```)
+* Set flash mode to "DIO", reset method to "nodemcu", debug port to serial and select the correct usb device (e.g. ```/dev/ttyUSB0```)
 
 ### Installing OpenMQTTGateway ###
 
