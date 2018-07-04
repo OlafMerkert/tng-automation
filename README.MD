@@ -9,7 +9,7 @@
 
 ### Test mosquitto mqtt broker ###
 
-* Install mosquitto client tools (e.g. ```apt install mosquitto-client```
+* Install mosquitto client tools (e.g. ```apt install mosquitto-client```)
 * Subscribe to the test topic
 
       mosquitto_sub -t test -h <infrastructure-host>
