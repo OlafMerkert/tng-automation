@@ -2,10 +2,10 @@
 
 ## node-red and mosquitto broker ##
 
-cd docker
-mkdir node-red-data
-chmod 777 node-red-data
-docker-compose up
+      cd docker
+      mkdir node-red-data
+      chmod 777 node-red-data
+      docker-compose up
 
 ### Test mosquitto mqtt broker ###
 
