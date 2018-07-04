@@ -1,4 +1,6 @@
-### Setup ###
+# Setup #
+
+## node-red and mosquitto broker ##
 
 cd docker
 mkdir node-red-data
@@ -15,6 +17,8 @@ docker-compose up
 * Send a message
 
       mosquitto_pub -t test -m "Hello wold" -h <infrastructure-host>
+
+## Microcontroller ##
 
 ### Install arduino IDE with ESP8266 support ###
 
