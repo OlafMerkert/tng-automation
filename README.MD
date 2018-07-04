@@ -40,8 +40,6 @@
       
 * Edit User_config.h with mqtt_server ip and wifi settings
 * Flash OpenMQTTGateway.ino via upload sketch and check result on arduino console (ctrl+shift+m)
-* You should get an 
-
-      Connected to broker message
+* You should get an ```Connected to broker message```
 
 
