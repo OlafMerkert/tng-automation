@@ -38,6 +38,7 @@
 
       arduino  OpenMQTTGateway.ino
       
+* Copy lib folder from OpenMQTTGateway.git to <sketchbook location>/libraries to install all required libraries
 * Edit User_config.h with mqtt_server ip and wifi settings
 * Flash OpenMQTTGateway.ino via upload sketch and check result on arduino console (ctrl+shift+m)
 * You should get an ```Connected to broker message```
