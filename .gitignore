@@ -1,2 +1,6 @@
 .idea
 docker/node-red-data/
+.bin
+node_modules
+node-red/on-off-keying/nodes/*.d.ts
+node-red/on-off-keying/nodes/*.js*
