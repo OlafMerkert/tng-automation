@@ -1,0 +1,47 @@
+<script type="text/x-red" data-template-name="ook_encode">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+        <div class="form-row">
+        <label for="node-input-startPattern"><i class="fa fa-tag"></i> Start timing pattern as JSON array </label>
+        <input type="text" id="node-input-startPattern" placeholder="[9000]">
+    </div>
+        <div class="form-row">
+        <label for="node-input-zeroPattern"><i class="fa fa-tag"></i> Timing pattern for zero as JSON array </label>
+        <input type="text" id="node-input-zeroPattern" placeholder="[500, 2000]">
+    </div>
+        <div class="form-row">
+        <label for="node-input-onePattern"><i class="fa fa-tag"></i> Timing pattern for one as JSON array </label>
+        <input type="text" id="node-input-onePattern" placeholder="[500, 4000]">
+    </div>
+    <div class="form-tips">
+        On-Off-Keying encoder
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ook_decode">
+    <p>On-Off-Keying decoder</p>
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ook_encode', {
+        category: "On-Off-Keying",
+        color: "#5882FA",
+        defaults: {
+            name: {},
+            startPattern: {value: "[9000]", required: true},
+            zeroPattern: {value: "[500, 2000]", required: true},
+            onePattern: {value: "[500, 4000]", required: true},
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "hash.png",
+        align: "right",
+        label: function () {
+            return this.name || "ook_encode"
+        }
+    });
+</script>

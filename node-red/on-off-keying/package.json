@@ -1,0 +1,26 @@
+{
+  "name": "node-red-contrib-onoffkeying",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "license": "MIT",
+  "description": "On-Off-Keying en-/decoder for node-red",
+  "keywords": [
+    "node-red",
+    "on-off-keying"
+  ],
+  "node-red": {
+    "nodes": {
+      "ook-decode": "nodes/ook-decode.js",
+      "ook-encode": "nodes/ook-encode.js"
+    }
+  },
+  "dependencies": {
+    "@types/node-red": "^0.17.3"
+  },
+  "devDependencies": {
+    "typescript": "2.9.2"
+  }
+}

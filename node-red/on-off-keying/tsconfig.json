@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "declaration": true,
+    "listFiles": false,
+    "outDir": "./nodes"
+  },
+  "files": [
+    "src/ook-decode.ts",
+    "src/ook-encode.ts"
+  ]
+}
