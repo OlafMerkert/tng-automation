@@ -32,7 +32,7 @@
 
 * Clone source code from here
 
-      https://github.com/1technophile/OpenMQTTGateway.git
+      https://github.com/fgather/OpenMQTTGateway.git
       
 * Open main sketch with Arduino "IDE"
 
