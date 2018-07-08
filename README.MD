@@ -11,7 +11,7 @@
 
 * Go to node-red-data
 * Run npm install "../../node-red/on-off-keying"
-* Go to node-red/on-off-keying and run: "npm install" and "npm build"
+* Go to node-red/on-off-keying and run: "npm install" and "npm run build"
 * Restart docker containers if needed
 
 ### Test mosquitto mqtt broker ###
