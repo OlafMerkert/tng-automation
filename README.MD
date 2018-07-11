@@ -54,7 +54,7 @@
      
        mosquitto_sub -h localhost -p 1883 -t +/# -v
       
- * Wire up hardware like:
+ * Turn on the light stripe:
  
        mosquitto_pub -t home/OpenMQTTGateway/commands/IR_NEC -m 16761150
 
