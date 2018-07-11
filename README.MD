@@ -52,5 +52,5 @@
 * Wire up hardware like [this](https://github.com/1technophile/OpenMQTTGateway/wiki/ESP8266-IR-Send-and-Receive)
 * Check for incoming messages:
      
-     mosquitto_sub -h localhost -p 1883 -t +/# -v
+      mosquitto_sub -h localhost -p 1883 -t +/# -v
 
