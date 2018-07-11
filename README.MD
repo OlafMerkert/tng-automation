@@ -43,4 +43,14 @@
 * Flash OpenMQTTGateway.ino via upload sketch and check result on arduino console (ctrl+shift+m)
 * You should get an ```Connected to broker message```
 
+### RF Setup ###
+
+[See RF.MD](RF.MD)
+
+### IR Setup ###
+
+* Wire up hardware like [this](https://github.com/1technophile/OpenMQTTGateway/wiki/ESP8266-IR-Send-and-Receive)
+* Check for incoming messages:
+     
+     mosquitto_sub -h localhost -p 1883 -t +/# -v
 
