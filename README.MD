@@ -7,13 +7,6 @@
       chmod 777 node-red-data
       docker-compose up
 
-## Install node-red nodes for on-off-keying
-
-* Go to node-red-data
-* Run npm install "../../node-red/on-off-keying"
-* Go to node-red/on-off-keying and run: "npm install" and "npm run build"
-* Restart docker containers if needed
-
 ### Test mosquitto mqtt broker ###
 
 * Install mosquitto client tools (e.g. ```apt install mosquitto-client```)
