@@ -1,3 +1,7 @@
+# Overview #
+
+* We will use the same architecture as described [here}(https://github.com/mqtt-smarthome/mqtt-smarthome/blob/master/Architecture.md)
+
 # Setup #
 
 ## node-red and mosquitto broker ##
