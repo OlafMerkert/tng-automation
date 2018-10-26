@@ -34,6 +34,7 @@ You can either create an account or sign in with an existing GitHub or Google ac
 * Node RED
 
 ** Installation and startup
+
 Install it:
 #+BEGIN_SRC sh
 npm install -g node-red
@@ -121,4 +122,26 @@ arduino OpenMQTTGateway.ino
 
 + Flash OpenMQTTGateway.ino via "Upload Sketch" and check result on Arduino console (ctrl+shift+m)
 + You should see a "Connected to broker" message in the console.
+
+**  RF
+
++ Wire up the C1011 receiver as in the picture:
+  file:C1011_Schaltplan.png
+
+* Processing RF Data with Node Red
+
+** Build and install ook en/decoder
+
+Open a terminal in =<OpenMQTTGateway>/node-red/on-off-keying= and run:
+#+BEGIN_SRC sh
+npm install
+npm run build
+#+END_SRC
+
+Open a terminal in the node-red "User directory" (node-red should print this information on startup) and run
+#+BEGIN_SRC sh
+npm install <OpenMQTTGateway>/node-red/on-off-keying
+#+END_SRC
+
+Restart node-red and reload the node-red web interface. There should now be two new nodes "ook_decode" and "ook_encode" visible.
 
