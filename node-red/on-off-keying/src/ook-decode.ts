@@ -1,11 +1,13 @@
-import {Red, Node} from "node-red";
+import {Node, Red} from "node-red";
 import {OokDecoder} from "./ook-decoder";
 import {EncodingDefinition} from "./encoding-definition";
+import {parseTimings, replaceAll, sanitizeTimingString} from "./utils";
 
 function registerOokDecodeNode(RED: Red) {
     function OokDecode(config: any) {
         const node: Node = this;
         RED.nodes.createNode(this, config);
+        this.buffer = "";
 
         const encodingDefinition: EncodingDefinition = {
             'patterns': [
@@ -20,14 +22,7 @@ function registerOokDecodeNode(RED: Red) {
             this.buffer += message;
 
             if (message.substring(message.length - 1, message.length) !== '+') {
-                this.buffer = replaceAll(this.buffer, '+', '');
-
-                let input = replaceAll(this.buffer, '\r', '');
-                input = replaceAll(input, '\n', ' ');
-                input = input.trim();
-
-                let timings = this.buffer.split(' ')
-                    .map((str) => Number(str));
+                let timings = parseTimings(sanitizeTimingString(this.buffer));
 
                 let bits = OokDecoder.decodeOokMessage(timings, encodingDefinition);
                 if (bits && bits.length > 0) {
@@ -41,11 +36,6 @@ function registerOokDecodeNode(RED: Red) {
     }
 
     RED.nodes.registerType('ook_decode', OokDecode);
-}
-
-function replaceAll(input: string, oldVal: string, newVal: string): string {
-    return input.split(oldVal)
-        .join(newVal);
 }
 
 

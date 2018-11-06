@@ -13,6 +13,8 @@
   },
   "files": [
     "src/ook-decode.ts",
-    "src/ook-encode.ts"
+    "src/ook-encode.ts",
+    "src/ook-concat.ts",
+    "src/ook-split.ts"
   ]
 }

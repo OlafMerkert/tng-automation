@@ -1,0 +1,30 @@
+<script type="text/x-red" data-template-name="ook_split">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">
+        On-Off-Keying split
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ook_split">
+    <p>On-Off-Keying split</p>
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ook_split', {
+        category: "On Off Keying",
+        color: "#5882FA",
+        defaults: {},
+        inputs: 1,
+        outputs: 1,
+        icon: "hash.png",
+        align: "right",
+        label: function () {
+            return this.name || "ook_split"
+        }
+    });
+</script>

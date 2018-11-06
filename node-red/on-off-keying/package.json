@@ -14,7 +14,9 @@
   "node-red": {
     "nodes": {
       "ook-decode": "nodes/ook-decode.js",
-      "ook-encode": "nodes/ook-encode.js"
+      "ook-encode": "nodes/ook-encode.js",
+      "ook-concat": "nodes/ook-concat.js",
+      "ook-split": "nodes/ook-split.js"
     }
   },
   "dependencies": {

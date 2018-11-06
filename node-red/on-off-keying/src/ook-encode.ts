@@ -1,5 +1,6 @@
 import {Red, Node} from "node-red";
 import {EncodingDefinition} from "./encoding-definition";
+import {sendTimingsInChunks} from "./utils";
 
 function registerOokEncodeNode(RED: Red) {
     function OokEncode(config: any) {
@@ -37,31 +38,11 @@ function registerOokEncodeNode(RED: Red) {
         node.on('input', function (msg) {
             let input = JSON.parse(msg.payload);
             let timings = encodeOokMessage(input, encodingDefinition);
-
-            let i, j, chunk = 20;
-            for (i = 0, j = timings.length; i < j; i += chunk) {
-                let timingChunk = timings.slice(i, i + chunk);
-
-                msg.payload = timingChunk.join(' ');
-
-                if (i < j - chunk) {
-                    msg.payload += ' +';
-                }
-
-                node.send(msg);
-            }
-
-
+            sendTimingsInChunks(timings, node);
         });
     }
 
     RED.nodes.registerType('ook_encode', OokEncode);
 }
-
-function replaceAll(input: string, oldVal: string, newVal: string): string {
-    return input.split(oldVal)
-        .join(newVal);
-}
-
 
 export = registerOokEncodeNode;

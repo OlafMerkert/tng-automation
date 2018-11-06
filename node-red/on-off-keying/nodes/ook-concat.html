@@ -1,0 +1,30 @@
+<script type="text/x-red" data-template-name="ook_concat">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">
+        On-Off-Keying concat
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ook_concat">
+    <p>On-Off-Keying concat</p>
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ook_concat', {
+        category: "On Off Keying",
+        color: "#5882FA",
+        defaults: {},
+        inputs: 1,
+        outputs: 1,
+        icon: "hash.png",
+        align: "right",
+        label: function () {
+            return this.name || "ook_concat"
+        }
+    });
+</script>
