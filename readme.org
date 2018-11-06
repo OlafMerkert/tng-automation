@@ -143,5 +143,5 @@ Open a terminal in the node-red "User directory" (node-red should print this inf
 npm install <OpenMQTTGateway>/node-red/on-off-keying
 #+END_SRC
 
-Restart node-red and reload the node-red web interface. There should now be two new nodes "ook_decode" and "ook_encode" visible.
+Restart node-red and reload the node-red web interface. There should now be four new nodes "ook_decode", "ook_encode", "ook_split", "ook_concat" visible.
 
