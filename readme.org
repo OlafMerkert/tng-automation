@@ -130,7 +130,7 @@ arduino OpenMQTTGateway.ino
 
 * Processing RF Data with Node Red
 
-** Locate the node-red User-directory
+** Locate the node-red user directory
 On startup, node-red should print out a line like
 
 #+BEGIN_QUOTE
