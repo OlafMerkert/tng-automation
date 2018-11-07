@@ -130,6 +130,19 @@ arduino OpenMQTTGateway.ino
 
 * Processing RF Data with Node Red
 
+** Locate the node-red user directory
+On startup, node-red should print out a line like
+
+#+BEGIN_QUOTE
+7 Nov 20:48:30 - [info] User directory : /home/olaf/.node-red
+#+END_QUOTE
+
+This is were node-red will keep user specific data like the flows you created, and where we can also install plugins.
+
+** Copy example flows
+
+Copy the =<OpenMQTTGateway>/node-red/lib= folder into the node-red user directory. 
+
 ** Build and install ook en/decoder
 
 Open a terminal in =<OpenMQTTGateway>/node-red/on-off-keying= and run:
@@ -138,7 +151,7 @@ npm install
 npm run build
 #+END_SRC
 
-Open a terminal in the node-red "User directory" (node-red should print this information on startup) and run
+Open a terminal in the node-red user directory and run
 #+BEGIN_SRC sh
 npm install <OpenMQTTGateway>/node-red/on-off-keying
 #+END_SRC
