@@ -9,7 +9,7 @@ We use [[https://github.com/mcollina/mosca][mosca]].
 
 Install it:
 #+BEGIN_SRC sh
-npm install -g mosca 
+npm install -g mosca
 #+END_SRC
 
 Run it:
@@ -84,7 +84,7 @@ You can disable your debug output by clicking the button to the right of the deb
 
 * Smartphone Apps
 
-Apps to try out: 
+Apps to try out:
 + [[https://play.google.com/store/apps/details?id=net.routix.mqttdash&hl=de][MQTT Dash (IoT, Smart Home)]] (for Android)
 + [[http://1j2.com/ihometouch/][iHomeTouch]] (for iOS, please evaluate)
 
@@ -99,16 +99,16 @@ Apps to try out:
 + Under "Tools > Board", select Node MCU as target platform.
 + Under "Tools > Port", select the correct usb device (e.g. =/dev/ttyUSB0=) after connecting the board via USB.
 
-** Installing OpenMQTTGateway 
+** Installing OpenMQTTGateway
 
 + Clone source code from https://github.com/fgather/OpenMQTTGateway.git
-      
+
 + Open main sketch inside the repo with the Arduino IDE
 
 #+BEGIN_SRC sh
 arduino OpenMQTTGateway.ino
 #+END_SRC
-      
+
 + Copy lib folder from the cloned OpenMQTTGateway.git repo to <sketchbook location>/libraries to install all required libraries.
 
 + Edit User_config.h with mqtt_server IP and WiFi settings
@@ -141,11 +141,11 @@ This is were node-red will keep user specific data like the flows you created, a
 
 ** Copy example flows
 
-Copy the =<OpenMQTTGateway>/node-red/lib= folder into the node-red user directory. 
+Copy the =<tng-automation>/node-red/lib= folder into the node-red user directory.
 
 ** Build and install ook en/decoder
 
-Open a terminal in =<OpenMQTTGateway>/node-red/on-off-keying= and run:
+Open a terminal in =<tng-automation>/node-red/on-off-keying= and run:
 #+BEGIN_SRC sh
 npm install
 npm run build
@@ -153,8 +153,7 @@ npm run build
 
 Open a terminal in the node-red user directory and run
 #+BEGIN_SRC sh
-npm install <OpenMQTTGateway>/node-red/on-off-keying
+npm install <tng-automation>/node-red/on-off-keying
 #+END_SRC
 
 Restart node-red and reload the node-red web interface. There should now be four new nodes "ook_decode", "ook_encode", "ook_split", "ook_concat" visible.
-
