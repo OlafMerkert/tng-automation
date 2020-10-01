@@ -56,7 +56,6 @@ unsigned long timer_led_measures = 0;
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <FS.h>
-#include <WiFiManager.h>
 WiFiClient eClient;
 
 #define convertTemp_CtoF(c) ((c * 1.8) + 32)

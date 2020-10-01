@@ -53,11 +53,13 @@ Start Arduino and open preferences
 Enter `http://arduino.esp8266.com/stable/package_esp8266com_index.json` into “Additional Board Manager URLs” field. 
 
 Open `Tools` > `Board: "Arduino Uno"` > `Boards Manager...` and install the “esp8266” package.
+
 Under `Tools` > `Board: "Arduino Uno"` > `ESP8266 Boards (2.7.4)` select `NodeMCU 1.0 (ESP-12E Module)` as target platform.
+
 Under `Tools` > `Port`, select the correct usb device (e.g. `/dev/ttyUSB0`) after connecting the board via USB.
 
 
-##Using OpenMQTT
+## Using OpenMQTT
 
 - Copy the `<tng-automation>/arduino_rf_to_mqtt/libraries` folder into your Arduino user folder (e.g. `~/Arduino`).
 
@@ -87,7 +89,7 @@ optional
 - Open Arduino console (ctrl+shift+m) and select `11520 baud`
 - You should see your NodeMCU connecting to WIFI and MQTT Broker
 
-##Using ESPHome
+## Using ESPHome
 - Install
 ```
 pip3 install esphome
