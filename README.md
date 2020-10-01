@@ -37,6 +37,9 @@ node-red
 ```
 Open a browser at this [URL](http://127.0.0.1:1880/).
 
+## Wifi Configuration
+To connect the NodeMCU with your WIFI make sure your Router supports **802.11b**
+
 ## Arduino
 **Do not use!!!**
 ```
