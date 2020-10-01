@@ -5,3 +5,4 @@ node_modules
 node-red/on-off-keying/nodes/*.d.ts
 node-red/on-off-keying/nodes/*.js*
 arduino_rf_to_mqtt/main/credentials.h
+esp_rf_to_mqtt/dep

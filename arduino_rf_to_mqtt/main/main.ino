@@ -29,7 +29,7 @@ unsigned long timer_sys_measures = 0;
 #include <ArduinoLog.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
-
+#include <ArduinoOTA.h>
 
 /*------------------------------------------------------------------------*/
 
@@ -51,68 +51,155 @@ uint8_t wifiProtocol = 0; // default mode, automatic selection
 
 unsigned long timer_led_measures = 0;
 
-#include <ArduinoOTA.h>
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <ESP8266WiFi.h>
-#include <FS.h>
-WiFiClient eClient;
 
-#define convertTemp_CtoF(c) ((c * 1.8) + 32)
-#define convertTemp_FtoC(f) ((f - 32) * 5 / 9)
+WiFiClient eClient;
 
 // client link to pubsub mqtt
 PubSubClient client(eClient);
 
-void revert_hex_data(const char* in, char* out, int l) {
-  //reverting array 2 by 2 to get the data in good order
-  int i = l - 2, j = 0;
-  while (i != -2) {
-    if (i % 2 == 0)
-      out[j] = in[i + 1];
-    else
-      out[j] = in[i - 1];
-    j++;
-    i--;
+
+
+void setup() {
+  //Launch serial for debugging purposes
+  Serial.begin(SERIAL_BAUD);
+  Log.begin(LOG_LEVEL, &Serial);
+  Serial.print(F(CR "************* WELCOME TO OpenMQTTGateway **************" CR));
+
+  setup_wifi();
+  
+  Log.notice(F("OpenMQTTGateway Wifi protocol used: %d" CR), wifiProtocol);
+  Log.notice(F("OpenMQTTGateway mac: %s" CR), WiFi.macAddress().c_str());
+  Log.notice(F("OpenMQTTGateway ip: %s" CR), WiFi.localIP().toString().c_str());
+  setOTA();
+
+  long port;
+  port = strtol(mqtt_port, NULL, 10);
+  Log.trace(F("Port: %l" CR), port);
+  Log.trace(F("Mqtt server: %s" CR), mqtt_server);
+  client.setServer(mqtt_server, port);
+
+  setup_parameters();
+
+  client.setCallback(callback);
+
+  delay(1500);
+  
+  setupRFCC1101();
+
+  Log.trace(F("mqtt_max_packet_size: %d" CR), mqtt_max_packet_size);
+  Log.notice(F("Setup OpenMQTTGateway end" CR));
+}
+
+
+void setup_wifi() {
+  char manual_wifi_ssid[] = wifi_ssid;
+  char manual_wifi_password[] = wifi_password;
+
+  delay(10);
+  WiFi.mode(WIFI_STA);
+  if (wifiProtocol) forceWifiProtocol();
+
+  // We start by connecting to a WiFi network
+  Log.trace(F("Connecting to %s" CR), manual_wifi_ssid);
+#ifdef ESPWifiAdvancedSetup
+  IPAddress ip_adress(ip);
+  IPAddress gateway_adress(gateway);
+  IPAddress subnet_adress(subnet);
+  IPAddress dns_adress(Dns);
+  if (!WiFi.config(ip_adress, gateway_adress, subnet_adress, dns_adress)) {
+    Log.error(F("Wifi STA Failed to configure" CR));
   }
-  out[l - 1] = '\0';
-}
+  WiFi.begin(manual_wifi_ssid, manual_wifi_password);
+#else
+  WiFi.begin(manual_wifi_ssid, manual_wifi_password);
+#endif
 
-void extract_char(const char* token_char, char* subset, int start, int l, bool reverse, bool isNumber) {
-  if (isNumber) {
-    if (reverse)
-      revert_hex_data(token_char + start, subset, l + 1);
-    long long_value = strtoul(subset, NULL, 16);
-    sprintf(subset, "%ld", long_value);
-  } else {
-    if (reverse)
-      revert_hex_data(token_char + start, subset, l + 1);
-    else
-      strncpy(subset, token_char + start, l + 1);
+  if (wifi_reconnect_bypass())
+    Log.notice(F("Connected with saved credentials" CR));
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Log.trace(F("." CR));
+    failure_number_ntwk++;
+    disconnection_handling(failure_number_ntwk);
   }
-  subset[l] = '\0';
+  Log.notice(F("WiFi ok with manual config credentials" CR));
 }
 
-char* ip2CharArray(IPAddress ip) { //from Nick Lee https://stackoverflow.com/questions/28119653/arduino-display-ethernet-localip
-  static char a[16];
-  sprintf(a, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-  return a;
-}
 
-bool to_bool(String const& s) { // thanks Chris Jester-Young from stackoverflow
-  return s != "0";
-}
+void loop() {
 
-bool cmpToMainTopic(char* topicOri, char* toAdd) {
-  char topic[mqtt_topic_max_size];
-  strcpy(topic, mqtt_topic);
-  strcat(topic, toAdd);
-  if (strstr(topicOri, topic) != NULL) {
-    return true;
-  } else {
-    return false;
+  unsigned long now = millis();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    ArduinoOTA.handle();
+    failure_number_ntwk = 0;
+    if (client.connected()) {
+      connectedOnce = true;
+      failure_number_ntwk = 0;
+
+      client.loop();
+      if(RFCC1101toMQTT()){
+        //Serial.println(F("RFCC1101toMQTT OK" CR));
+      }
+      if (now > (timer_sys_measures + (TimeBetweenReadingSYS * 1000)) || !timer_sys_measures) {
+        timer_sys_measures = millis();
+        stateMeasures();
+      }
+    } else {
+      connectMQTT();
+    }
+  } else { // disconnected from network
+    Log.warning(F("Network disconnected:" CR));
+    Log.warning(F("wifi" CR));
+    failure_number_ntwk++;
+    disconnection_handling(failure_number_ntwk);
   }
 }
+
+void stateMeasures() {
+  String state = "State meassurements:\n";
+  state = state + "uptime: " + String(millis() / 1000) + "\n";
+  state = state + "version: " + String(OMG_VERSION) + "\n";
+  state = state + "freemem: " + String(ESP.getFreeHeap()) + "\n";
+  state = state + "rssi: " + String(WiFi.RSSI()) + "\n";
+  state = state + "SSID: " + WiFi.SSID() + "\n";
+  state = state + "ip: " + String(ip2CharArray(WiFi.localIP())) + "\n";
+  state = state + "mac: " + WiFi.macAddress() + "\n";
+  String b = "fff";
+  state = state+b;
+  client.publish(subjectSYStoMQTT, (char *)state.c_str());
+  Serial.println(state);
+}
+
+void receivingMQTT(char* topicOri, char* datacallback) {
+  StaticJsonBuffer<JSON_MSG_BUFFER> jsonBuffer;
+  JsonObject& jsondata = jsonBuffer.parseObject(datacallback);
+
+  if (jsondata.success()) { // json object ok -> json decoding
+    // log the received json
+    //logJson(jsondata);
+    MQTTtoSYS(topicOri, jsondata);
+  } else { // not a json object --> simple decoding
+      MQTTtoRFCC1101(topicOri, datacallback);
+  }
+}
+
+void MQTTtoSYS(char* topicOri, JsonObject& SYSdata) { // json object decoding
+  if (cmpToMainTopic(topicOri, subjectMQTTtoSYSset)) {
+    Log.trace(F("MQTTtoSYS json" CR));
+    if (SYSdata.containsKey("cmd")) {
+      const char* cmd = SYSdata["cmd"];
+      Log.notice(F("Command: %s" CR), cmd);
+      if (strstr(cmd, restartCmd) != NULL) { //restart
+        ESP.reset();
+      } else {
+        Log.warning(F("wrong command" CR));
+      }
+    }
+  }
+}
+
 
 void connectMQTT() {
   Log.warning(F("MQTT connection..." CR));
@@ -159,37 +246,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 void setup_parameters() {
   strcat(mqtt_topic, gateway_name);
-}
-
-void setup() {
-  //Launch serial for debugging purposes
-  Serial.begin(SERIAL_BAUD);
-  Log.begin(LOG_LEVEL, &Serial);
-  Serial.print(F(CR "************* WELCOME TO OpenMQTTGateway **************" CR));
-
-  setup_wifi();
-  
-  Log.trace(F("OpenMQTTGateway Wifi protocol used: %d" CR), wifiProtocol);
-  Log.trace(F("OpenMQTTGateway mac: %s" CR), WiFi.macAddress().c_str());
-  Log.trace(F("OpenMQTTGateway ip: %s" CR), WiFi.localIP().toString().c_str());
-  setOTA();
-
-  long port;
-  port = strtol(mqtt_port, NULL, 10);
-  Log.trace(F("Port: %l" CR), port);
-  Log.trace(F("Mqtt server: %s" CR), mqtt_server);
-  client.setServer(mqtt_server, port);
-
-  setup_parameters();
-
-  client.setCallback(callback);
-
-  delay(1500);
-  
-  setupRFCC1101();
-
-  Log.trace(F("mqtt_max_packet_size: %d" CR), mqtt_max_packet_size);
-  Log.notice(F("Setup OpenMQTTGateway end" CR));
 }
 
 // Bypass for ESP not reconnecting automaticaly the second time https://github.com/espressif/arduino-esp32/issues/2501
@@ -281,122 +337,52 @@ void setOTA() {
   ArduinoOTA.begin();
 }
 
-
-void setup_wifi() {
-  char manual_wifi_ssid[] = wifi_ssid;
-  char manual_wifi_password[] = wifi_password;
-
-  delay(10);
-  WiFi.mode(WIFI_STA);
-  if (wifiProtocol) forceWifiProtocol();
-
-  // We start by connecting to a WiFi network
-  Log.trace(F("Connecting to %s" CR), manual_wifi_ssid);
-#ifdef ESPWifiAdvancedSetup
-  IPAddress ip_adress(ip);
-  IPAddress gateway_adress(gateway);
-  IPAddress subnet_adress(subnet);
-  IPAddress dns_adress(Dns);
-  if (!WiFi.config(ip_adress, gateway_adress, subnet_adress, dns_adress)) {
-    Log.error(F("Wifi STA Failed to configure" CR));
+void revert_hex_data(const char* in, char* out, int l) {
+  //reverting array 2 by 2 to get the data in good order
+  int i = l - 2, j = 0;
+  while (i != -2) {
+    if (i % 2 == 0)
+      out[j] = in[i + 1];
+    else
+      out[j] = in[i - 1];
+    j++;
+    i--;
   }
-  WiFi.begin(manual_wifi_ssid, manual_wifi_password);
-#else
-  WiFi.begin(manual_wifi_ssid, manual_wifi_password);
-#endif
-
-  if (wifi_reconnect_bypass())
-    Log.notice(F("Connected with saved credentials" CR));
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Log.trace(F("." CR));
-    failure_number_ntwk++;
-    disconnection_handling(failure_number_ntwk);
-  }
-  Log.notice(F("WiFi ok with manual config credentials" CR));
+  out[l - 1] = '\0';
 }
 
-
-void loop() {
-
-  unsigned long now = millis();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    ArduinoOTA.handle();
-    failure_number_ntwk = 0;
-    if (client.connected()) {
-      connectedOnce = true;
-      failure_number_ntwk = 0;
-
-      client.loop();
-      if(RFCC1101toMQTT()){
-        Log.warning(F("RFCC1101toMQTT OK" CR));
-      }
-      if (now > (timer_sys_measures + (TimeBetweenReadingSYS * 1000)) || !timer_sys_measures) {
-        timer_sys_measures = millis();
-        stateMeasures();
-      }
-    } else {
-      connectMQTT();
-    }
-  } else { // disconnected from network
-    Log.warning(F("Network disconnected:" CR));
-    Log.warning(F("wifi" CR));
-    failure_number_ntwk++;
-    disconnection_handling(failure_number_ntwk);
+void extract_char(const char* token_char, char* subset, int start, int l, bool reverse, bool isNumber) {
+  if (isNumber) {
+    if (reverse)
+      revert_hex_data(token_char + start, subset, l + 1);
+    long long_value = strtoul(subset, NULL, 16);
+    sprintf(subset, "%ld", long_value);
+  } else {
+    if (reverse)
+      revert_hex_data(token_char + start, subset, l + 1);
+    else
+      strncpy(subset, token_char + start, l + 1);
   }
+  subset[l] = '\0';
 }
 
-void stateMeasures() {
-  StaticJsonBuffer<JSON_MSG_BUFFER> jsonBuffer;
-  JsonObject& SYSdata = jsonBuffer.createObject();
-  unsigned long uptime = millis() / 1000;
-  SYSdata["uptime"] = uptime;
-  SYSdata["version"] = OMG_VERSION;
-  Log.trace(F("retrieving value of system characteristics Uptime (s):%u" CR), uptime);
-  uint32_t freeMem;
-  freeMem = ESP.getFreeHeap();
-  SYSdata["freemem"] = freeMem;
-  long rssi = WiFi.RSSI();
-  SYSdata["rssi"] = rssi;
-  String SSID = WiFi.SSID();
-  SYSdata["SSID"] = SSID;
-  SYSdata["ip"] = ip2CharArray(WiFi.localIP());
-  String mac = WiFi.macAddress();
-  SYSdata["mac"] = (char*)mac.c_str();
-  //SYSdata["wifiprt"] = (int)wifiProtocol;
-  String modules = "";
-  SYSdata["modules"] = modules;
-  //pub(subjectSYStoMQTT, SYSdata);
+char* ip2CharArray(IPAddress ip) { //from Nick Lee https://stackoverflow.com/questions/28119653/arduino-display-ethernet-localip
+  static char a[16];
+  sprintf(a, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+  return a;
 }
 
-void receivingMQTT(char* topicOri, char* datacallback) {
-  StaticJsonBuffer<JSON_MSG_BUFFER> jsonBuffer;
-  JsonObject& jsondata = jsonBuffer.parseObject(datacallback);
-
-  if (jsondata.success()) { // json object ok -> json decoding
-    // log the received json
-    //logJson(jsondata);
-    digitalWrite(LED_SEND, LED_SEND_ON);
-
-    MQTTtoSYS(topicOri, jsondata);
-  } else { // not a json object --> simple decoding
-      MQTTtoRFCC1101(topicOri, datacallback);
-  }
+bool to_bool(String const& s) { // thanks Chris Jester-Young from stackoverflow
+  return s != "0";
 }
 
-void MQTTtoSYS(char* topicOri, JsonObject& SYSdata) { // json object decoding
-  if (cmpToMainTopic(topicOri, subjectMQTTtoSYSset)) {
-    Log.trace(F("MQTTtoSYS json" CR));
-    if (SYSdata.containsKey("cmd")) {
-      const char* cmd = SYSdata["cmd"];
-      Log.notice(F("Command: %s" CR), cmd);
-      if (strstr(cmd, restartCmd) != NULL) { //restart
-        ESP.reset();
-      } else {
-        Log.warning(F("wrong command" CR));
-      }
-    }
+bool cmpToMainTopic(char* topicOri, char* toAdd) {
+  char topic[mqtt_topic_max_size];
+  strcpy(topic, mqtt_topic);
+  strcat(topic, toAdd);
+  if (strstr(topicOri, topic) != NULL) {
+    return true;
+  } else {
+    return false;
   }
 }
