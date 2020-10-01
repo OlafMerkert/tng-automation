@@ -32,11 +32,12 @@
 #  define OMG_VERSION "v0.9.5"
 #endif
 #ifndef ESPWifiManualSetup
-#  define ESPWifiManualSetup true
+#  define ESPWifiManualSetup
 #endif
 #ifndef ZgatewayRFCC1101
 #  define ZgatewayRFCC1101
 #endif
+#include "credentials.h"
 
 /*-------------CONFIGURE WIFIMANAGER-------------(only ESP8266 & SONOFF RFBridge)*/
 /*
@@ -89,10 +90,10 @@ const byte mac[] = {0xDE, 0xED, 0xBA, 0xFE, 0x54, 0x95}; //W5100 ethernet shield
 
 #if defined(ESPWifiManualSetup) // for nodemcu, weemos and esp8266
 #  ifndef wifi_ssid
-#    define wifi_ssid "ENTER WIFI SSID HERE"
+#    define wifi_ssid WIFI_NAME //put the name of your wifi here
 #  endif
 #  ifndef wifi_password
-#    define wifi_password "ENTER PASSWORD HERE"
+#    define wifi_password WIFI_PWD //put the password of your wifi here
 #  endif
 #endif
 
@@ -117,7 +118,7 @@ const byte mac[] = {0xDE, 0xED, 0xBA, 0xFE, 0x54, 0x95}; //W5100 ethernet shield
 #  define MQTT_PASS "your_password"
 #endif
 #ifndef MQTT_SERVER
-#  define MQTT_SERVER "ENTER MQTT BROKER IP ADRESS HERE"
+#  define MQTT_SERVER "192.168.0.73" //adjust to correct ip adress
 #endif
 #ifndef MQTT_PORT
 #  define MQTT_PORT "1883"
