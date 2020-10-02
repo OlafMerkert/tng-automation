@@ -98,7 +98,7 @@ void MQTTtoRFCC1101(char * topicOri, char * datacallback) {
       }
 
       if (msg[i] == '+') {
-        Log.warning("wait for next part of timing pattern");
+        Log.warning("wait for next part of timing pattern\n");
         return;
       }
 
@@ -115,7 +115,7 @@ void MQTTtoRFCC1101(char * topicOri, char * datacallback) {
       }
     }
 
-    Log.warning("starting rf transmission");
+    Log.warning("starting rf transmission\n");
     enterSendMode(434000000, 0x60);
 
     for (int j = 0; j < 5; j++) {
