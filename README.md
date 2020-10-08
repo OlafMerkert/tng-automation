@@ -101,10 +101,19 @@ pip3 install esphome
 ```
 PATH=$PATH:/usr/lib/python3/dist-packages
 ```
-- Go to `<tng-automation>/esp_rf_to_mqtt`
-- Change `ssid` and `password` according for your WIFI connection
-- Run `esphome smarthome.yaml run`
-- You should see your NodeMCU connecting to WIFI
+- Go to `<tng-automation>/esp-smarthome`
+- Create a `secrets.yaml` file and add following information
+```
+wifi_password: "YOUR_WIFI_PASSWORD"
+wifi_ssid: "YOUR_WIFI_SSID"
+```
+- In `smarthome.yaml` change following information
+```
+mqtt:
+  broker: MQTT_BROKER_IP_ADDRESS
+  username: "MQTT_USERNAME"    for remote mqtt broker only
+  password: "MQTT_PASSWORD"    for remote mqtt broker only
+```
 ## RF
 - Wire up the C11011 receiver as in the picture C1011_Schaltplan.png
 
@@ -138,3 +147,14 @@ npm install <tng-automation>/node-red/on-off-keying
 - Open node-red in the browser and click the three bars in the top left corner `Import` > `Library` > `Wetter_Steckdose.json` > `Import`
 
 - Click the bug symbol in the top right corner and see Temperature and Humidity Data sent to your Sensor
+
+## Start RF Decoding
+- Start mqtt broker mosca with `mosca -v`
+- Start node-red with `node-red` and open http://127.0.0.1:1880 in your browser
+- Click the three bars in the top right corner and import flows with `Import` > `Library` > `Wetter.json` and `Steckdose_schalten.json`
+- Plug the Node-MCU into your PC and go to `<tng-automation>/esp-home`
+- Run `esphome smarthome.yaml run`
+- Your NodeMCU should connect to the WIFI and MQTT Broker.
+- Click the `an` and `aus` button in node-red to send turn off and turn on commands to your wireless socket
+- Open the backplate of your weather sensor and press the `TX` button. 
+- You should see weather information in the debug view of node-red
