@@ -6,6 +6,8 @@ esphome:
   board: nodemcuv2
   includes:
     - cc1101_component.h
+    - libraries/SmartRC-CC1101-Driver-Lib/ELECHOUSE_CC1101_SRC_DRV.cpp
+    - libraries/SmartRC-CC1101-Driver-Lib/ELECHOUSE_CC1101_SRC_DRV.h
     - libraries/radio/radio.h
     - libraries/radio/radio.cpp
 
