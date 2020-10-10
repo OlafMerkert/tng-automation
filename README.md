@@ -11,6 +11,8 @@ sudo apt-get install npm --version 6.14.4
 Install [python](https://www.python.org/downloads/)
 
 ## MQTT broker
+
+###Mosca (don't use)
 ```
 remove for version without warnings
 ```
@@ -22,6 +24,17 @@ Run with
 ```
 mosca -v
 ```
+
+###Mosquitto
+```
+sudo apt-get install mosquitto
+sudo apt-get install mosquitto-clients
+```
+Mosquitto starts automatically in the background. Use the following command to see all published messages:
+```
+mosquitto_sub -v -t '#'
+```
+Replace # with a topic name to subscribe to a specific topic
 
 ## Node RED
 ```
@@ -110,9 +123,9 @@ wifi_ssid: "YOUR_WIFI_SSID"
 - In `smarthome.yaml` change following information
 ```
 mqtt:
-  broker: MQTT_BROKER_IP_ADDRESS
-  username: "MQTT_USERNAME"    for remote mqtt broker only
-  password: "MQTT_PASSWORD"    for remote mqtt broker only
+  broker: MQTT_BROKER_IP_ADDRESS    ip adress in local network if using Mosquitto
+  username: "MQTT_USERNAME"         for remote mqtt broker only
+  password: "MQTT_PASSWORD"         for remote mqtt broker only
 ```
 ## RF
 - Wire up the C11011 receiver as in the picture C1011_Schaltplan.png
@@ -149,7 +162,7 @@ npm install <tng-automation>/node-red/on-off-keying
 - Click the bug symbol in the top right corner and see Temperature and Humidity Data sent to your Sensor
 
 ## Start RF Decoding
-- Start mqtt broker mosca with `mosca -v`
+- Start mqtt broker mosca with `mosca -v` (not necessary if using mosquitto)
 - Start node-red with `node-red` and open http://127.0.0.1:1880 in your browser
 - Click the three bars in the top right corner and import flows with `Import` > `Library` > `Wetter.json` and `Steckdose_schalten.json`
 - Plug the Node-MCU into your PC and go to `<tng-automation>/esp-home`
