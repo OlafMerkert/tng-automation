@@ -158,3 +158,12 @@ npm install <tng-automation>/node-red/on-off-keying
 - Click the `an` and `aus` button in node-red to send turn off and turn on commands to your wireless socket
 - Open the backplate of your weather sensor and press the `TX` button. 
 - You should see weather information in the debug view of node-red
+
+##Known Problems
+```
+ERROR Running command failed: [Errno 13] could not open port /dev/ttyUSB0: [Errno 13] Permission denied: '/dev/ttyUSB0'
+```
+If you encounter this error after starting esphome, you need to create /etc/udev/rules.d/01-ttyusb.rules with content:
+```
+SUBSYSTEMS=="usb-serial", TAG+="uaccess"
+```
