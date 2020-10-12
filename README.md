@@ -36,6 +36,15 @@ mosquitto_sub -v -t '#'
 ```
 Replace # with a topic name to subscribe to a specific topic
 
+To prevent automatic startup use
+```
+sudo systemctl disable mosquitto.service
+```
+Then you need to start the broker manually with
+```
+mosquitto -v
+```
+
 ## Node RED
 ```
 remove for version without warnings
@@ -108,7 +117,7 @@ optional
 ## Using ESPHome
 - Install
 ```
-pip3 install esphome
+sudo pip3 install esphome
 ```
 - Add Install location to path
 ```
