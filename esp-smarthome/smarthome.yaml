@@ -26,6 +26,7 @@ ota:
 
 mqtt:
   broker: 192.168.0.73
+  # client_id:      for remote mqtt broker
   # username:       for remote mqtt broker
   # password:       for remote mqtt broker
 
