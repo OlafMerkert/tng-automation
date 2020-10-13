@@ -1,3 +1,16 @@
+/*
+  radio.cpp - CC1101 as 433 MHz Transceiver
+  Copyright (c) 2020 Florian Gather.
+  Copyright (c) 2020 Georg Kreuzmayr
+    Author: Florian, <https://www.tngtech.com/>
+    Version: October, 2020
+  This library is designed to use CC1101 with ESP8266 on esphome
+  For the details, please refer to the datasheet of CC1100/CC1101.
+----------------------------------------------------------------------------------------------------------------
+SPDX-License-Identifier: Apache-2.0
+----------------------------------------------------------------------------------------------------------------
+*/
+
 #ifndef TNG_AUTOMATION_RADIO_H
 #define TNG_AUTOMATION_RADIO_H
 
