@@ -13,12 +13,8 @@ SPDX-License-Identifier: Apache-2.0
 
 #include "radio.h"
 
-long unsigned lastSend = 0;
-int sendDelay = 5000;
-
 void Radio::setup() {
     while(!init()){
-        Serial.println("Cannot initialize receiver!");
         delay(1000);
     }
 }
