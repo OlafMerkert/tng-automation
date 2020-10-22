@@ -75,7 +75,7 @@ mosquitto -v
 ```
 Use the following command to see published messages to the topic: /some/topic:
 ```
-mosquitto_sub -v -t '/some/topic'
+mosquitto_sub -v -t 'some/topic'
 ```
 
 ### Remote Broker (optional)
@@ -153,7 +153,7 @@ npm install <tng-automation>/node-red/on-off-keying
 ## Start RF Decoding
 - Start mqtt broker mosquitto with `mosquitto -v` (only necessary if auto start is disabled)
 - Start node-red with `node-red` and open http://127.0.0.1:1880 in your browser
-- Click the three bars in the top right corner and import flows with `Import` > `Library` > `Wetter.json` and `Steckdose_schalten.json`
+- Click the three bars in the top right corner and import flows with `Import` > `Library` > `Wetter.json` and `SteckdosenSchalter.json`
 - Plug the Node-MCU into your PC and go to `<tng-automation>/esp-home`
 - Run `esphome smarthome.yaml run`
 - Your NodeMCU should connect to the WIFI and MQTT Broker.
@@ -163,7 +163,7 @@ npm install <tng-automation>/node-red/on-off-keying
 
 ***Remote MQTT Broker***
 - Add a new device on MyQtt like in the ***ESPHome*** step
-- Double Click the ***/esphome/433toMQTT*** node
+- Double Click the ***esphome/433toMQTT*** node
 - Select `Server` > `Add new mqtt-broker...`  and click the pencil symbol
 - Define a ***Name*** for your remote broker in node-red
 - Select ***Enable secure (SSL/TLS) connection***
