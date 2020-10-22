@@ -18,6 +18,7 @@ wifi:
 
 # Enable logging
 logger:
+  level: DEBUG
 
 # Enable Home Assistant API
 api:
@@ -31,6 +32,11 @@ mqtt:
   # password:       for remote mqtt broker
 
 custom_component:
+  # configure topics, repetitions and delay
   - lambda: |-
-      auto my_custom = new CC1101Component();
-      return {my_custom};
+      char const *send_rf_topic = "esphome/MQTTto433";
+      char const *receive_rf_topic = "esphome/433toMQTT";
+      int send_repetitions = 5;
+      int delay_between_send = 300;
+      auto cc1101 = new CC1101Component(send_rf_topic, receive_rf_topic, send_repetitions, delay_between_send);
+      return {cc1101};

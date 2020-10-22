@@ -1,14 +1,14 @@
 #include "esphome.h"
 #include <radio.h>
-#include <queue>
 
-#define RECEIVE_STATE_TOPIC "/esphome/MQTTto433"
-#define TRANSMIT_STATE_TOPIC "/esphome/433toMQTT"
 #define MAXSENDBUFFERLENGTH 200
 #define MAXMQTTLENGTH 2000
-#define SEND_REPETITIONS 5
-#define DELAY_BETWEEN_SEND 300
-#define INVERT_SIGNALS true
+#define INVERT_SIGNALS false
+
+char const *SEND_RF_TOPIC;
+char const *RECEIVE_RF_TOPIC;
+int SEND_REPETITIONS;
+int DELAY_BETWEEN_SEND;
 
 Radio radio = Radio();
 
@@ -21,7 +21,7 @@ public:
     void setupGateway(){
         radio.setup();
         enterReceiveMode();
-        Serial.println("Start Receiving");
+        ESP_LOGI(TAG, "CC1101 Gateway setup successfully");
     }
 
     String RFCC1101toMQTT(){
@@ -43,9 +43,8 @@ public:
     }
 
     void MQTTtoRFCC1101(String msg){
-        Serial.println("Starting sending");
+        ESP_LOGD(TAG, "Received MQTT message with RF timings: %s", msg.c_str());
         String nextToken = "";
-        Serial.println(msg);
 
         for (int i = 0; i < msg.length(); i++) {
             if (msg[i] != ' ' && msg[i] != '+') {
@@ -53,7 +52,7 @@ public:
             }
 
             if (msg[i] == '+') {
-                Serial.println("wait for next part of timing pattern");
+                ESP_LOGD(TAG, "Wait for next part of RF timings");
                 return;
             }
 
@@ -63,18 +62,18 @@ public:
 
                 if (sendBufferLength >= MAXSENDBUFFERLENGTH) {
                     sendBufferLength = 0;
-                    Serial.println("buffer overflow");
+                    ESP_LOGW(TAG, "RF timings buffer overflow");
                     return;
                 }
                 nextToken = "";
             }
         }
 
-        Serial.println("starting rf transmission");
+        ESP_LOGD(TAG, "Transmitting RF timings via CC1101");
         enterSendMode();
 
         for (int j = 0; j < 5; j++) {
-            bool transmitting = INVERT_SIGNALS;
+            bool transmitting = !INVERT_SIGNALS;
 
             for (int i = 0; i < sendBufferLength; i++ ) {
                 transmitting = !transmitting;
@@ -85,17 +84,18 @@ public:
             delayMicroseconds(DELAY_BETWEEN_SEND);
         }
         sendBufferLength = 0;
-
         enterReceiveMode();
     }
 
 private:
     uint16_t sendBuffer[MAXSENDBUFFERLENGTH];
     uint16_t sendBufferLength = 0;
+    const char *TAG = "RadioGateway";
     void enterReceiveMode() {
         pinMode(RFCC1101_RECEIVER_PIN, INPUT);
         attachInterrupt(digitalPinToInterrupt(RFCC1101_RECEIVER_PIN), handlePinChange, CHANGE );
         radio.enterRxMode();
+        ESP_LOGV(TAG, "CC1101 in receive mode");
     }
     void enterSendMode() {
         pinMode(RFCC1101_EMITTER_PIN, OUTPUT);
@@ -105,20 +105,28 @@ private:
             radio.enterTxMode();
             delay(1);
         }
+        ESP_LOGV(TAG, "CC1101 in send mode");
     }
 };
 
 class CC1101Component : public Component, public CustomMQTTDevice {
 public:
-    RadioGateway gateway = RadioGateway();
+    CC1101Component(char const *send_rf_topic, char const *receive_rf_topic, int send_repetitions, int delay_between_send){
+        SEND_RF_TOPIC = send_rf_topic;
+        RECEIVE_RF_TOPIC = receive_rf_topic;
+        SEND_REPETITIONS = send_repetitions;
+        DELAY_BETWEEN_SEND = delay_between_send;
+    }
 
     void setup() {
+        ESP_LOGI(TAG, "Setting up CC1101");
         gateway.setupGateway();
-        subscribe(RECEIVE_STATE_TOPIC, &CC1101Component::on_message);
+        subscribe(SEND_RF_TOPIC, &CC1101Component::on_message);
+        log_config();
     }
 
     void on_message(const std::string &payload) {
-        Serial.println("Received timings from MQTT");
+        ESP_LOGV(TAG, "Received RF timings from MQTT");
         gateway.MQTTtoRFCC1101(String(payload.c_str()));
     }
 
@@ -130,11 +138,15 @@ public:
             while(i<length){
                 String toSend = msg.substring(i-max_mqtt_length, i);
                 toSend = toSend+"+";
-                publish(TRANSMIT_STATE_TOPIC, toSend.c_str());
+                publish(RECEIVE_RF_TOPIC, toSend.c_str());
+                ESP_LOGV(TAG, "Sent RF timings to MQTT");
+                ESP_LOGVV(TAG, "Timings: %s", toSend.c_str());
                 i = i+max_mqtt_length;
             }
             String toSend = msg.substring(i-max_mqtt_length, length);
-            publish(TRANSMIT_STATE_TOPIC, toSend.c_str());
+            publish(RECEIVE_RF_TOPIC, toSend.c_str());
+            ESP_LOGV(TAG, "Sent RF timings to MQTT");
+            ESP_LOGVV(TAG, "Timings: %s", toSend.c_str());
         }
     }
 
@@ -142,5 +154,25 @@ public:
     float get_setup_priority() const override { return -100.0; }
 
 private:
+    RadioGateway gateway = RadioGateway();
     int max_mqtt_length = MAXMQTTLENGTH;
+    const char *TAG = "CC1101Component";
+
+    void log_config(){
+        const char *invert_signals;
+        if(INVERT_SIGNALS){
+            invert_signals = "true";
+        }
+        else{
+            invert_signals = "false";
+        }
+        ESP_LOGCONFIG(TAG, "CC1101Component:");
+        ESP_LOGCONFIG(TAG, "  SEND_RF_TOPIC: %s", SEND_RF_TOPIC);
+        ESP_LOGCONFIG(TAG, "  RECEIVE_RF_TOPIC: %s", RECEIVE_RF_TOPIC);
+        ESP_LOGCONFIG(TAG, "  SEND_REPETITIONS: %i", SEND_REPETITIONS);
+        ESP_LOGCONFIG(TAG, "  DELAY_BETWEEN_SEND: %i", DELAY_BETWEEN_SEND);
+        ESP_LOGCONFIG(TAG, "  MAX_SEND_BUFFER_LENGTH: %i", MAXSENDBUFFERLENGTH);
+        ESP_LOGCONFIG(TAG, "  MAX_MQTT_LENGTH: %i", MAXMQTTLENGTH);
+        ESP_LOGCONFIG(TAG, "  INVERT_SIGNALS: %s", invert_signals);
+    }
 };
