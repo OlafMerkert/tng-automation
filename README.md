@@ -61,4 +61,4 @@ npm install <tng-automation>/node-red/on-off-keying
 
 Apps to try out:
 - [MQTT Dash(IoT, Smart Home)](https://play.google.com/store/apps/details?id=net.routix.mqttdash&hl=de) (for Android)
-- [iHomeTouch]([http://1j2.com/ihometouch/) (for iOS, please evaluate)
+- [iHomeTouch](http://1j2.com/ihometouch/) (for iOS, please evaluate)
