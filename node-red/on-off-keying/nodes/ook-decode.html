@@ -5,15 +5,15 @@
     </div>
         <div class="form-row">
         <label for="node-input-startPattern"><i class="fa fa-tag"></i> Start timing pattern as JSON array </label>
-        <input type="text" id="node-input-startPattern" placeholder="[9000]">
+        <input type="text" id="node-input-startPattern" placeholder="[5000]">
     </div>
         <div class="form-row">
         <label for="node-input-zeroPattern"><i class="fa fa-tag"></i> Timing pattern for zero as JSON array </label>
-        <input type="text" id="node-input-zeroPattern" placeholder="[500, 2000]">
+        <input type="text" id="node-input-zeroPattern" placeholder="[100, 300]">
     </div>
         <div class="form-row">
         <label for="node-input-onePattern"><i class="fa fa-tag"></i> Timing pattern for one as JSON array </label>
-        <input type="text" id="node-input-onePattern" placeholder="[500, 4000]">
+        <input type="text" id="node-input-onePattern" placeholder="[100, 300]">
     </div>
     <div class="form-row">
         <label for="node-input-acceptedDeviation"><i class="fa fa-tag"></i> Allowed timing deviation</label>
@@ -36,9 +36,9 @@
         color: "#5882FA",
         defaults: {
             name: {},
-            startPattern: {value: "[9000]", required: true},
-            zeroPattern: {value: "[500, 2000]", required: true},
-            onePattern: {value: "[500, 4000]", required: true},
+            startPattern: {value: "[5000]", required: true},
+            zeroPattern: {value: "[100, 300]", required: true},
+            onePattern: {value: "[100, 300]", required: true},
             acceptedDeviation: {value: 0.3, required: true}
         },
         inputs: 1,
