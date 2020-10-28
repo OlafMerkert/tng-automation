@@ -25,6 +25,7 @@ Alternatively use package manager:
 Any python3 version will work
 - Visit the python3.9 download website at  https://www.python.org/downloads/release/python-390/
 - Scroll down and select your OS version installer
+- Run installation and select `Add Python 3.9 to PATH`
 
 Alternatively use package manager:
 
@@ -39,7 +40,8 @@ Alternatively use package manager:
 
 ## Mosquitto
 - Visit the mosquitto download website at https://mosquitto.org/download
-- Select your Os version installer
+- Select your OS version installer
+- Add mosquitto folder to environment path if necessary
 
 Alternatively use package manager:
 
@@ -50,25 +52,35 @@ Alternatively use package manager:
 **MacOS X**
 - `brew install mosquitto`
 
+#### Disable auto start:
+
+**Ubuntu**
+- //TODO: Add command
+
+**Windows**
+- `net stop mosquitto`
+
+
 ## ESPHome
 - Install using python package manager pip
 - Open a terminal as administrator and enter 
-   - `$ pip3 install esphome` //TODO Check if root necessary
+   - `# pip3 install esphome`
 
 ## Node-Red
 - Install using node package manager npm
-- Open a terminal as administrator and enter 
-   - `$ npm install -g node-red` //TODO Check if root necessary
+- Open a terminal as and enter 
+   - `$ npm install -g node-red`
 
 # Cable Switch
 #### 1. ESPHome firmware
 - Make sure you installed ***ESPHome*** successfully, for reference check the prerequisites section
-- Create a new folder ***binary_sensor***
-- Open a terminal and start the ESPHome setup wizard in the above created folder
-   - `$ esphome binary_sensor.yaml wizard`
+
+- Create a new folder and open a terminal to start the ESPHome setup wizard
+   - `$ esphome cable_switch.yaml wizard`
+
 - Enter the following information, when prompted:
     
-    ***STEP 1 CORE***: binary_sensor
+    ***STEP 1 CORE***: cable_switch
     
     ***STEP 2 ESP (platform)***: ESP8266
     
@@ -80,15 +92,15 @@ Alternatively use package manager:
     
     ***STEP 4 OTA (password)***: press enter (no password)
  
- - Inspect the ***binary_sensor.yaml*** file
+- Inspect the ***cable_switch.yaml*** file
  
- - Use a micro usb cable to connect your NodeMCU to your computer
+- Use a micro usb cable to connect your NodeMCU to your computer
  
- - Flash the above created firmware onto your NodeMCU with the following command
+- Flash the above created firmware onto your NodeMCU with the following command
 
-   - `$ esphome binary_sensor.yaml run`
+   - `$ esphome cable_switch.yaml run`
 
-- After compilation enter `1` to select ***/dev/ttyUSB0 (USB Serial)*** to upload the firmware
+- After compilation enter `1` to select ***USB Serial*** to upload the firmware
 
 - You should now see that your NodeMCU connects to your wifi
 
@@ -101,22 +113,22 @@ Output:
 
 #### 2. Binary Sensor Component
 
-- Open your ***binary_sensor.yaml*** file and add following information
+- Open your ***cable_switch.yaml*** file and add following information
 
 ```
 binary_sensor:
   - platform: gpio
     pin:
-      number: D2
+      number: D1
       mode: INPUT_PULLUP
       inverted: True
     name: "My first Binary Sensor"
 ```
 
 - Flash the firmware onto your NodeMCU again with the command 
-   - `$ esphome binary_sensor.yaml run`
+   - `$ esphome cable_switch.yaml run`
 
-- Use a cable to connect the ***D2*** bin to a ***G*** pin
+- Use a cable to connect the ***D1*** bin to a ***G*** pin on your NodeMCU
 
 - You should see output similar to the following when connecting and disconnecting the two pins
 
@@ -130,7 +142,7 @@ Output:
 
 - Make sure you installed ***node-red*** and ***mosquitto***  successfully, for reference check the prerequisites section
 
-- Open a new terminal and start the mqtt broker ***mosquitto*** with the command `mosquitto`
+- Open a new terminal and start the mqtt broker ***mosquitto*** with the command `$ mosquitto -v` (only necessary if auto start is disabled)
 
 Output:
 ```
@@ -140,7 +152,7 @@ Output:
 1603706412: Opening ipv6 listen socket on port 1883.
 ```
 
-- Find out your computers local ip address and configure your mqtt broker in the ***binary_sensor.yaml*** file
+- Find out your computers local ip address and configure your mqtt broker in the ***cable_switch.yaml*** file
 
 IP Address
 ```
@@ -148,11 +160,14 @@ ip add //Linux
 ipconfig getifaddr en1 // MacOS X
 ipconfig // Windows
 ```
-Add configuration to your ***binary_sensor.yaml*** file
+Add following information to your ***cable_switch.yaml*** file
 ```yaml
 mqtt:
-  broker: YOUR_LOCAL_IP_ADDRESS
+  broker: YOUR_LOCAL_IPv4_ADDRESS
 ```
+
+- Flash the firmware onto your NodeMCU again with the command 
+   - `$ esphome cable_switch.yaml run`
 
 - Open a new terminal and start ***node-red*** with the command `node-red`
 
@@ -171,17 +186,25 @@ Output:
 
 - Double click the ***mqtt in*** node and click the pencil symbol
 
-- Enter a name like `local_broker` for our local mqtt broker, enter `localhost` in the server field and click `Add`
+- Enter a name like `local_broker` for your local mqtt broker mosquitto, enter `localhost` in the server field and click `Add`
 
-- Copy `espbinary_sensor/binary_sensor/my_first_binary_sensor/state` into the topic field and click `Done`
+- Copy `cable_switch/binary_sensor/my_first_binary_sensor/state` into the topic field and click `Done`
 
-- Click `Deploy` in the top right corner and click the bug symbol to see the debug output
+- Click `Deploy` in the top right corner and click the ***bug symbol*** to see the debug output
 
-- When connecting and disconnecting the D2 and G pins you should see messages sent to the mqtt topic
+- When connecting and disconnecting the D1 and G pins you should see messages sent to the mqtt topic
 
 # LED
 #### 1. ESPHome firmware
 - Copy the information from your ***binar_sensor.yaml*** file to a new file named ***led.yaml***
+
+- Change the name to ***led***
+```yaml
+esphome:
+  name: binary_sensor  //change to led
+  platform: ESP8266
+  board: nodemcuv2
+```
 
 - Add the following information to your ***led.yaml*** file
 
@@ -217,13 +240,15 @@ switch:
 
 - Add two ***inject*** nodes and send the strings "ON" and "OFF" to your ***mqtt out*** node
 
-- Turn your LED on and off with by injecting the messages
+- Click `Deploy` in the top right corner
+
+- Turn your LED on and off by injecting the messages
 
 - Optional: Use your Cable Switch from the last step to turn your LED on and off
 
 # Wireless Socket
 #### 1. Setup Transceiver
-- Wire up the CC1101 receiver as in the picture CC1101_wiring.png
+- Wire up the CC1101 antenna as shown in the picture CC1101_wiring.png
 
 - Go to `<tng-automation>/esp-smarthome/radio.yaml` and change following information
 ```yaml
@@ -236,7 +261,7 @@ mqtt:
 ```
 - Start mqtt broker mosquitto with `$ mosquitto` (only necessary if auto start is disabled)
 
-- Flash the firmware onto your NodeMCU with 
+- Flash the firmware onto your NodeMCU with
    - `$ esphome radio.yaml run`
 
 - Received RF timings are sent to the ***esphome/433toMQTT*** topic
@@ -257,6 +282,8 @@ mqtt:
 - Set ***esphome/MQTTto433*** as MQTT Topic
 
 - Repeat this process with the ***wireless_socket_off*** file
+
+- Click `Deploy` in the top right corner
 
 - Now you can turn your wireless socket on and off by triggering the inject node
 
@@ -293,6 +320,8 @@ mqtt:
 
 - Configure the ***ook_encode*** node with the correct patterns for zero, one, and start
 
+- Connect the output of the ***ook_encode*** with the ***mqtt out*** node
+
 - Repeat this process with the ***wireless_socket_off*** file
 
 - Now you should be able to turn your socket on and off using the correct binary code
@@ -308,6 +337,8 @@ mqtt:
 - Your NodeMCU should still be sending 433 MHz signals to the specified topic, otherwise flash the radio.yaml file onto your device again
 
 - Remove the backplate of your weather station and press the ***TX*** button to send 433 MHz signals
+
+- You should see 433 MHz timings in the debug window
 
 - Try to find the correct patterns for zero, one, and start to configure the ***ook_decode*** node
 
@@ -353,7 +384,7 @@ mqtt:
 #### 2. Remote Broker
 To replace the mosquitto broker on your pc you can use this remote broker service
 - Go to https://myqtthub.com/en/ and create an account
-- Log in at https://pas.aspl.es/ using your your myqtthub credentials 
+- Log in at https://pas.aspl.es/ using your your myqtthub credentials
 - Under `Last Messages Received` open following message `Service activation for your MyQttHub ...`
 - Under `--== MQTT SERVER, PANEL AND API ==--` save following credentials for later use: ***MQTT Server***,
  ***User***, ***Password*** 
