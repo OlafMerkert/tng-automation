@@ -10,6 +10,8 @@ esphome:
     - libraries/SmartRC-CC1101-Driver-Lib/ELECHOUSE_CC1101_SRC_DRV.h
     - libraries/radio/radio.h
     - libraries/radio/radio.cpp
+  libraries:
+    - SPI
 
 wifi:
   ssid: WIFI_SSID           # enter your wifi ssid
