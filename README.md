@@ -6,7 +6,7 @@ NodeMCU with an ESP8266 chipset
 - NodeJS [here](https://nodejs.org/en/download)
 - Python3 [here](https://www.python.org/downloads/release/python-390/)
 - MQTT Broker mosquitto [here](https://mosquitto.org/download)
-- ESPHome `# pip3 install esphome` (version 1.15.3 used) note: install as admin
+- ESPHome `# pip3 install esphome` note: install as admin
 - Node-Red `$ npm install -g node-red`
 
 ## Processing RF Data
